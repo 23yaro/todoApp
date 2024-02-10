@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:tutr/views/items/ToDoWidget.dart';
+import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
+import '../items/ToDoWidget.dart';
+import '/../consts/colors.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
+      backgroundColor: tdBGColor,
       body: Stack(
-        children: [
-          Container(
-            child: const ToDoScroll(),
-          ),
-          Container(
-            child: const AddButton(),
-          )
-        ],
+        children: [ToDoScroll()],
       ),
     );
   }
@@ -31,11 +27,14 @@ class ToDoScroll extends StatefulWidget {
 class _ToDoScrollState extends State<ToDoScroll> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListView(children: const [ToDoWidget()])
-      ],
-    );
+    return DragAndDropLists(
+        onItemReorder: (int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {},
+        onListReorder: (int oldListIndex, int newListIndex) {},
+        children: [
+          DragAndDropList(children: [
+            DragAndDropItem(child: ToDoWidget()),
+          ])
+        ]);
   }
 }
 
@@ -44,7 +43,7 @@ class AddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Container();
   }
 }
 
@@ -53,6 +52,6 @@ class AppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Container();
   }
 }

@@ -6,13 +6,19 @@ class ToDoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: const Material(
-        child: ListTile(
-          title: const Text('Text'),
-          subtitle: const Text('time'),
-          leading: const Text('accept'),
-        ),
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 6,
+          )
+        ],
       ),
+      child: ListTile(),
     );
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import '../items/ToDoWidget.dart';
+import '../items/proxyDecorator.dart';
 import '/../consts/colors.dart';
+
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -11,30 +12,28 @@ class Home extends StatelessWidget {
     return const Scaffold(
       backgroundColor: tdBGColor,
       body: Stack(
-        children: [ToDoScroll()],
+        children: [ScrollBar()],
       ),
     );
   }
 }
 
-class ToDoScroll extends StatefulWidget {
-  const ToDoScroll({super.key});
+class ScrollBar extends StatefulWidget {
+  const ScrollBar({super.key});
 
   @override
-  State<ToDoScroll> createState() => _ToDoScrollState();
+  State<ScrollBar> createState() => _ScrollBarState();
 }
 
-class _ToDoScrollState extends State<ToDoScroll> {
+class _ScrollBarState extends State<ScrollBar> {
+
   @override
   Widget build(BuildContext context) {
-    return DragAndDropLists(
-        onItemReorder: (int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {},
-        onListReorder: (int oldListIndex, int newListIndex) {},
-        children: [
-          DragAndDropList(children: [
-            DragAndDropItem(child: ToDoWidget()),
-          ])
-        ]);
+    return ReorderableListView(
+      proxyDecorator: proxyDecorator,
+      children: [ToDoWidget(key: UniqueKey()), ToDoWidget(key: UniqueKey()), ToDoWidget(key: UniqueKey())],
+      onReorder: (int oldIndex, int newIndex) {},
+    );
   }
 }
 

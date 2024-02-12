@@ -18,7 +18,9 @@ class ToDoWidget extends StatelessWidget {
           )
         ],
       ),
-      child: ListTile(),
+      child: const ListTile(
+        title: Text(""),
+      ),
     );
   }
 }

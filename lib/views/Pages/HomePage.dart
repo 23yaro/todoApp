@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../items/ToDoWidget.dart';
 import '../items/proxyDecorator.dart';
 import '/../consts/colors.dart';
-
+import '../../model/Task.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -31,7 +31,7 @@ class _ScrollBarState extends State<ScrollBar> {
   Widget build(BuildContext context) {
     return ReorderableListView(
       proxyDecorator: proxyDecorator,
-      children: [ToDoWidget(key: UniqueKey()), ToDoWidget(key: UniqueKey()), ToDoWidget(key: UniqueKey())],
+      children: [ToDoWidget(key: UniqueKey(), task: Task(id: 1),), ToDoWidget(key: UniqueKey(), task: Task(id: 2),), ToDoWidget(key: UniqueKey(), task: Task(id:3),)],
       onReorder: (int oldIndex, int newIndex) {},
     );
   }

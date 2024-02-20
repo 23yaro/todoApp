@@ -9,12 +9,12 @@ class ToDoWidget extends StatefulWidget {
   final Task task;
 
   @override
-  State<ToDoWidget> createState() => ToDoWidgetState();
+  State<ToDoWidget> createState() => TaskWidget();
 }
 
-class ToDoWidgetState extends State<ToDoWidget> {
+class TaskWidget extends State<ToDoWidget> {
   late FocusNode myFocusNode;
-  late bool readOnly;
+  late bool disabledEditing;
   final _taskNameController = TextEditingController();
   final _taskDescriptionController = TextEditingController();
 
@@ -22,7 +22,7 @@ class ToDoWidgetState extends State<ToDoWidget> {
   void initState() {
     super.initState();
     myFocusNode = FocusNode();
-    readOnly = true;
+    disabledEditing = true;
     _taskNameController.text = widget.task.name.toString();
     _taskDescriptionController.text = widget.task.description.toString();
   }
@@ -66,81 +66,45 @@ class ToDoWidgetState extends State<ToDoWidget> {
             shape: const Border(),
             leading: checkIconButton(
                 Icons.check_box, Icons.check_box_outline_blank, 28.0),
-            title: Theme(
-              data: ThemeData(disabledColor: Colors.black),
-              child: TextField(
-                controller: _taskNameController,
-                focusNode: myFocusNode,
-                enabled: !readOnly,
-                decoration: readOnly
-                    ? const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5))
-                    : const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5)),
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                ),
-                onEditingComplete: () => {editingComplete()},
+            title: TextField(
+              controller: _taskNameController,
+              focusNode: myFocusNode,
+              enabled: !disabledEditing,
+              decoration: disabledEditing
+                  ? const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 5))
+                  : const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 5)),
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
               ),
+              onEditingComplete: () => {editingComplete()},
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Visibility(
-                  visible: !readOnly,
-                  child: IconButton(
-                    icon: const Icon(Icons.check),
-                    color: Colors.green.withOpacity(0.7),
-                    onPressed: () {
-                      editingComplete();
-                    },
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    //myFocusNode.requestFocus();
-                    if (readOnly) {
-                      setState(() {
-                        readOnly = false;
-                      });
-                    }
-                  },
-                ),
-              ],
+            trailing: IconButton(
+              icon: disabledEditing? const Icon(Icons.edit) : const Icon(Icons.check),
+              color: disabledEditing? null : Colors.green.withOpacity(0.9),
+              onPressed: () {
+                //myFocusNode.requestFocus();
+                if (disabledEditing) {
+                  setState(() {
+                    disabledEditing = false;
+                  });
+                }
+                else {
+                  editingComplete();
+                }
+              },
             ),
             children: [
-              ListTile(
-                leading:
+              SubTaskWidget(
+                checkIconButton:
                     checkIconButton(Icons.check_circle, Icons.circle_outlined),
-                title: Container(
-                  decoration: BoxDecoration(
-                    color: tdBGColor,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: TextField(
-                    controller: _taskDescriptionController,
-                    //focusNode: myFocusNode,
-                    readOnly: readOnly,
-                    decoration: readOnly
-                        ? const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 5))
-                        : const InputDecoration(
-                            border: UnderlineInputBorder(),
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 5)),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                    onEditingComplete: () => {editingComplete()},
-                  ),
-                ),
-                trailing: const SizedBox(),
-              ), //sub tasks
+                readOnly: disabledEditing,
+                editingComplete: editingComplete,
+              ),
             ],
           ),
         ),
@@ -164,7 +128,7 @@ class ToDoWidgetState extends State<ToDoWidget> {
 
   void editingComplete() {
     setState(() {
-      readOnly = true;
+      disabledEditing = true;
       widget.task.description = _taskNameController.text;
     });
   }

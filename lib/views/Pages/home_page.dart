@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../items/ToDoWidget.dart';
-import '../items/proxyDecorator.dart';
+import '../items/task_widget.dart';
+import '../items/proxy_decorator.dart';
 import '/../consts/colors.dart';
-import '../../model/Task.dart';
+import '../../model/tasks.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});

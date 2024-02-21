@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import '../../consts/colors.dart';
 
 class SubTaskWidget extends StatefulWidget {
-  final Widget checkIconButton;
   final bool readOnly;
   final Function editingComplete;
+  final Widget checkIconButton;
 
   const SubTaskWidget({
     super.key,
-    required this.checkIconButton,
     required this.readOnly,
     required this.editingComplete,
+    required this.checkIconButton,
   });
 
   @override

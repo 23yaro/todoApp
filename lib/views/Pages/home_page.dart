@@ -31,7 +31,7 @@ class _ScrollBarState extends State<ScrollBar> {
   Widget build(BuildContext context) {
     return ReorderableListView(
       proxyDecorator: proxyDecorator,
-      children: [ToDoWidget(key: UniqueKey(), task: Task(id: 1),), ToDoWidget(key: UniqueKey(), task: Task(id: 2),), ToDoWidget(key: UniqueKey(), task: Task(id:3),)],
+      children: [ToDoWidget(key: UniqueKey(), task: Task(id: 1),)],
       onReorder: (int oldIndex, int newIndex) {},
     );
   }

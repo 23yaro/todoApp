@@ -29,9 +29,7 @@ class TaskWidget extends State<ToDoWidget> {
 
   @override
   void dispose() {
-    // Clean up the focus node when the Form is disposed.
     myFocusNode.dispose();
-
     super.dispose();
   }
 
@@ -56,20 +54,17 @@ class TaskWidget extends State<ToDoWidget> {
         contentPadding: EdgeInsets.zero,
         horizontalTitleGap: 0.0,
         child: TapRegion(
-          onTapOutside: (event) => {
-            FocusManager.instance.primaryFocus?.unfocus(),
-            editingComplete(),
-          },
+          onTapOutside: (event) => _editingComplete(),
           child: ExpansionTile(
             iconColor: Colors.black,
             textColor: Colors.black,
             shape: const Border(),
-            leading: checkIconButton(
+            leading: _checkIconButton(
                 Icons.check_box, Icons.check_box_outline_blank, 28.0),
             title: TextField(
               controller: _taskNameController,
-              focusNode: myFocusNode,
               enabled: !disabledEditing,
+              focusNode: myFocusNode,
               decoration: disabledEditing
                   ? const InputDecoration(
                       border: InputBorder.none,
@@ -81,29 +76,15 @@ class TaskWidget extends State<ToDoWidget> {
                 color: Colors.black,
                 fontSize: 16,
               ),
-              onEditingComplete: () => {editingComplete()},
+              onEditingComplete: () => _editingComplete(),
             ),
-            trailing: IconButton(
-              icon: disabledEditing? const Icon(Icons.edit) : const Icon(Icons.check),
-              color: disabledEditing? null : Colors.green.withOpacity(0.9),
-              onPressed: () {
-                //myFocusNode.requestFocus();
-                if (disabledEditing) {
-                  setState(() {
-                    disabledEditing = false;
-                  });
-                }
-                else {
-                  editingComplete();
-                }
-              },
-            ),
+            trailing: _editButton(),
             children: [
               SubTaskWidget(
-                checkIconButton:
-                    checkIconButton(Icons.check_circle, Icons.circle_outlined),
                 readOnly: disabledEditing,
-                editingComplete: editingComplete,
+                editingComplete: _editingComplete,
+                checkIconButton:
+                    _checkIconButton(Icons.check_circle, Icons.circle_outlined),
               ),
             ],
           ),
@@ -112,24 +93,46 @@ class TaskWidget extends State<ToDoWidget> {
     );
   }
 
-  Widget checkIconButton(IconData complete, IconData uncompleted, [size]) {
+  Widget _checkIconButton(IconData complete, IconData uncompleted,
+      [double? size]) {
     return IconButton(
       iconSize: size,
       icon: Icon(widget.task.complete ? complete : uncompleted),
+      onPressed: () => _taskComplete(),
+    );
+  }
+
+  Widget _editButton() {
+    return IconButton(
+      icon: disabledEditing ? const Icon(Icons.edit) : const Icon(Icons.check),
+      color: disabledEditing ? null : Colors.green.withOpacity(0.9),
       onPressed: () {
-        setState(() {
-          widget.task.complete
-              ? widget.task.complete = false
-              : widget.task.complete = true;
-        });
+        if (disabledEditing) {
+          setState(() {
+            disabledEditing = false;
+          });
+        } else {
+          _editingComplete();
+        }
       },
     );
   }
 
-  void editingComplete() {
+  void _taskComplete() {
     setState(() {
-      disabledEditing = true;
-      widget.task.description = _taskNameController.text;
+      widget.task.complete
+          ? widget.task.complete = false
+          : widget.task.complete = true;
     });
+  }
+
+  void _editingComplete() {
+    if (!disabledEditing) {
+      setState(() {
+        widget.task.description = _taskNameController.text;
+        FocusManager.instance.primaryFocus?.unfocus();
+        disabledEditing = true;
+      });
+    }
   }
 }

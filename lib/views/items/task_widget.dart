@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../consts/colors.dart';
 import '../../model/tasks.dart';
 import 'sub_task_widget.dart';
 

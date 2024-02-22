@@ -13,16 +13,16 @@ class ToDoWidget extends StatefulWidget {
 }
 
 class TaskWidget extends State<ToDoWidget> {
-  late FocusNode myFocusNode;
   late bool disabledEditing;
+  late FocusNode myFocusNode;
   final _taskNameController = TextEditingController();
   final _taskDescriptionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    myFocusNode = FocusNode();
     disabledEditing = true;
+    myFocusNode = FocusNode();
     _taskNameController.text = widget.task.name.toString();
     _taskDescriptionController.text = widget.task.description.toString();
   }
@@ -37,19 +37,7 @@ class TaskWidget extends State<ToDoWidget> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-            right: BorderSide(color: Colors.red.withOpacity(0.7), width: 2)),
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 6,
-          )
-        ],
-      ),
+      decoration: _boxDecoration(),
       child: ListTileTheme(
         contentPadding: EdgeInsets.zero,
         horizontalTitleGap: 0.0,
@@ -65,13 +53,6 @@ class TaskWidget extends State<ToDoWidget> {
               controller: _taskNameController,
               enabled: !disabledEditing,
               focusNode: myFocusNode,
-              decoration: disabledEditing
-                  ? const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 5))
-                  : const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 5)),
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16,
@@ -90,6 +71,22 @@ class TaskWidget extends State<ToDoWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  Decoration _boxDecoration(){
+    return BoxDecoration(
+      color: Colors.white,
+      border: Border(
+          right: BorderSide(color: Colors.red.withOpacity(0.7), width: 2)),
+      borderRadius: BorderRadius.circular(10),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          spreadRadius: 2,
+          blurRadius: 6,
+        )
+      ],
     );
   }
 

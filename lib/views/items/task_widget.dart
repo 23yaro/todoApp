@@ -13,27 +13,22 @@ class ToDoWidget extends StatefulWidget {
 
 class TaskWidget extends State<ToDoWidget> {
   late bool disabledEditing;
-  late FocusNode myFocusNode;
-  final _taskNameController = TextEditingController();
-  final _taskDescriptionController = TextEditingController();
+  final _taskController = TextEditingController();
+  final _subTaskController = TextEditingController();
+
 
   @override
   void initState() {
     super.initState();
     disabledEditing = true;
-    myFocusNode = FocusNode();
-    _taskNameController.text = widget.task.name.toString();
-    _taskDescriptionController.text = widget.task.description.toString();
-  }
-
-  @override
-  void dispose() {
-    myFocusNode.dispose();
-    super.dispose();
+    _taskController.text = widget.task.name.toString();
+    _subTaskController.text = widget.task.description.toString();
+    widget.task.subTasks = [Task(id: 1), Task(id: 2), Task(id: 3)];
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: _boxDecoration(),
@@ -41,30 +36,40 @@ class TaskWidget extends State<ToDoWidget> {
         contentPadding: EdgeInsets.zero,
         horizontalTitleGap: 0.0,
         child: TapRegion(
-          onTapOutside: (event) => _editingComplete(),
+          onTapOutside: (event) => _editingComplete(widget.task),
           child: ExpansionTile(
             iconColor: Colors.black,
             textColor: Colors.black,
             shape: const Border(),
-            leading: _checkIconButton(
-                Icons.check_box, Icons.check_box_outline_blank, 28.0),
+            leading: IconButton(
+              iconSize: 28,
+              icon: Icon(widget.task.complete
+                  ? Icons.check_box
+                  : Icons.check_box_outline_blank),
+              onPressed: () => _taskComplete(widget.task),
+            ),
             title: TextField(
-              controller: _taskNameController,
+              controller: _taskController,
               enabled: !disabledEditing,
-              focusNode: myFocusNode,
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16,
               ),
-              onEditingComplete: () => _editingComplete(),
+              onEditingComplete: () => _editingComplete(widget.task),
             ),
-            trailing: _editButton(),
+            trailing: _editButton(widget.task),
             children: [
-              SubTaskWidget(
-                readOnly: disabledEditing,
-                editingComplete: _editingComplete,
-                checkIconButton:
-                    _checkIconButton(Icons.check_circle, Icons.circle_outlined),
+              ListView.builder(
+                itemCount: widget.task.subTasks.length,
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                itemBuilder: (BuildContext context, int index) {
+                  return SubTaskWidget(
+                    task: widget.task.subTasks[index],
+                    readOnly: disabledEditing,
+                    taskComplete: _taskComplete,
+                  );
+                },
               ),
             ],
           ),
@@ -73,7 +78,7 @@ class TaskWidget extends State<ToDoWidget> {
     );
   }
 
-  Decoration _boxDecoration(){
+  Decoration _boxDecoration() {
     return BoxDecoration(
       color: Colors.white,
       border: Border(
@@ -89,16 +94,7 @@ class TaskWidget extends State<ToDoWidget> {
     );
   }
 
-  Widget _checkIconButton(IconData complete, IconData uncompleted,
-      [double? size]) {
-    return IconButton(
-      iconSize: size,
-      icon: Icon(widget.task.complete ? complete : uncompleted),
-      onPressed: () => _taskComplete(),
-    );
-  }
-
-  Widget _editButton() {
+  Widget _editButton(Task task) {
     return IconButton(
       icon: disabledEditing ? const Icon(Icons.edit) : const Icon(Icons.check),
       color: disabledEditing ? null : Colors.green.withOpacity(0.9),
@@ -108,24 +104,21 @@ class TaskWidget extends State<ToDoWidget> {
             disabledEditing = false;
           });
         } else {
-          _editingComplete();
+          _editingComplete(task);
         }
       },
     );
   }
 
-  void _taskComplete() {
-    setState(() {
-      widget.task.complete
-          ? widget.task.complete = false
-          : widget.task.complete = true;
-    });
+  void _taskComplete(Task task) {
+    task.complete = !task.complete;
+    setState(() {});
   }
 
-  void _editingComplete() {
+  void _editingComplete(Task task) {
     if (!disabledEditing) {
       setState(() {
-        widget.task.description = _taskNameController.text;
+        task.name = _taskController.text;
         FocusManager.instance.primaryFocus?.unfocus();
         disabledEditing = true;
       });

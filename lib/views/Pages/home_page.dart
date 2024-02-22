@@ -11,8 +11,13 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: tdBGColor,
-      body: Stack(
-        children: [ScrollBar()],
+      body: Column(
+        children: [
+          SizedBox(
+            height: 50,
+          ),
+          ScrollBar(),
+        ],
       ),
     );
   }
@@ -26,12 +31,17 @@ class ScrollBar extends StatefulWidget {
 }
 
 class _ScrollBarState extends State<ScrollBar> {
-
   @override
   Widget build(BuildContext context) {
     return ReorderableListView(
+      shrinkWrap: true,
       proxyDecorator: proxyDecorator,
-      children: [ToDoWidget(key: UniqueKey(), task: Task(id: 1),)],
+      children: [
+        ToDoWidget(
+          key: UniqueKey(),
+          task: Task(id: 1, name: 'Task 1 Name'),
+        )
+      ],
       onReorder: (int oldIndex, int newIndex) {},
     );
   }

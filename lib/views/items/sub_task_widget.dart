@@ -5,15 +5,12 @@ import '../../model/tasks.dart';
 class SubTaskWidget extends StatefulWidget {
   final Task task;
   final bool readOnly;
-
-  //final Function editingComplete;
   final void Function(Task) taskComplete;
 
   const SubTaskWidget({
     super.key,
     required this.task,
     required this.readOnly,
-    //required this.editingComplete,
     required this.taskComplete,
   });
 
@@ -27,17 +24,22 @@ class _SubTaskWidgetState extends State<SubTaskWidget> {
   @override
   void initState() {
     super.initState();
-    widget.task.name = 'sub';
     _subTaskController.text = widget.task.name.toString();
+    _subTaskController.addListener(_saveSubTaskName);
+  }
+
+  @override
+  void dispose() {
+    _subTaskController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: IconButton(
-        icon: Icon(widget.task.complete
-            ? Icons.check_circle
-            : Icons.circle_outlined),
+        icon: Icon(
+            widget.task.complete ? Icons.check_circle : Icons.circle_outlined),
         onPressed: () => widget.taskComplete(widget.task),
       ),
       title: Container(
@@ -52,8 +54,6 @@ class _SubTaskWidgetState extends State<SubTaskWidget> {
           style: const TextStyle(
             fontSize: 14,
           ),
-          //onEditingComplete: () => widget.editingComplete,
-          //onTapOutside: (tap) => widget.editingComplete,
         ),
       ),
       trailing: const SizedBox(),
@@ -68,5 +68,8 @@ class _SubTaskWidgetState extends State<SubTaskWidget> {
         : const InputDecoration(
             border: UnderlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 5));
+  }
+  void _saveSubTaskName() {
+    widget.task.name = _subTaskController.text.toString();
   }
 }

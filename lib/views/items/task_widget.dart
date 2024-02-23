@@ -14,21 +14,25 @@ class ToDoWidget extends StatefulWidget {
 class TaskWidget extends State<ToDoWidget> {
   late bool disabledEditing;
   final _taskController = TextEditingController();
-  final _subTaskController = TextEditingController();
-
 
   @override
   void initState() {
     super.initState();
     disabledEditing = true;
     _taskController.text = widget.task.name.toString();
-    _subTaskController.text = widget.task.description.toString();
-    widget.task.subTasks = [Task(id: 1), Task(id: 2), Task(id: 3)];
+    _taskController.addListener(_saveTaskName);
+    //
+    widget.task.subTasks = [Task(id: 1)];
+  }
+
+  @override
+  void dispose() {
+    _taskController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: _boxDecoration(),
@@ -110,6 +114,10 @@ class TaskWidget extends State<ToDoWidget> {
     );
   }
 
+  void _saveTaskName() {
+    widget.task.name = _taskController.text.toString();
+  }
+
   void _taskComplete(Task task) {
     task.complete = !task.complete;
     setState(() {});
@@ -117,11 +125,10 @@ class TaskWidget extends State<ToDoWidget> {
 
   void _editingComplete(Task task) {
     if (!disabledEditing) {
-      setState(() {
-        task.name = _taskController.text;
-        FocusManager.instance.primaryFocus?.unfocus();
-        disabledEditing = true;
-      });
+      FocusManager.instance.primaryFocus?.unfocus();
+      task.name = _taskController.text;
+      disabledEditing = true;
+      setState(() {});
     }
   }
 }

@@ -39,7 +39,8 @@ class _ScrollBarState extends State<ScrollBar> {
       children: [
         ToDoWidget(
           key: UniqueKey(),
-          task: Task(id: 1, name: 'Task 1 Name'),
+          task: Task(id: 200, name: 'Task 1 Name'),
+          deleteTask: (int ) {  },
         )
       ],
       onReorder: (int oldIndex, int newIndex) {},

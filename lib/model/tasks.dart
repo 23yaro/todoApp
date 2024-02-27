@@ -3,7 +3,7 @@ class Task {
   int id;
   bool complete;
   String? name;
-  String? description;
+  //String? description;
   List<Task> subTasks;
   //DateTime dateTime;
 
@@ -11,7 +11,7 @@ class Task {
     required this.id ,
     this.complete = false,
     this.name = 'name',
-    this.description = 'description',
+    //this.description = 'description',
     this.subTasks = const [],
     //required this.dateTime,
   });

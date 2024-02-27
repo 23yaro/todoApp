@@ -3,26 +3,25 @@ import '../../model/tasks.dart';
 import 'sub_task_widget.dart';
 
 class ToDoWidget extends StatefulWidget {
-  const ToDoWidget({super.key, required this.task});
+  const ToDoWidget({super.key, required this.task, required this.deleteTask});
 
   final Task task;
+  final void Function(int) deleteTask;
 
   @override
   State<ToDoWidget> createState() => TaskWidget();
 }
 
 class TaskWidget extends State<ToDoWidget> {
-  late bool disabledEditing;
+  late bool _enabledEditing;
   final _taskController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    disabledEditing = true;
-    _taskController.text = widget.task.name.toString();
+    _enabledEditing = true;
     _taskController.addListener(_saveTaskName);
-    //
-    widget.task.subTasks = [Task(id: 1)];
+    widget.task.subTasks = [];
   }
 
   @override
@@ -33,6 +32,7 @@ class TaskWidget extends State<ToDoWidget> {
 
   @override
   Widget build(BuildContext context) {
+    _taskController.text = widget.task.name.toString();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: _boxDecoration(),
@@ -40,7 +40,11 @@ class TaskWidget extends State<ToDoWidget> {
         contentPadding: EdgeInsets.zero,
         horizontalTitleGap: 0.0,
         child: TapRegion(
-          onTapOutside: (event) => _editingComplete(widget.task),
+          onTapOutside: (event) {
+            if (!_enabledEditing) {
+              _switchEditing();
+            }
+          },
           child: ExpansionTile(
             iconColor: Colors.black,
             textColor: Colors.black,
@@ -54,12 +58,13 @@ class TaskWidget extends State<ToDoWidget> {
             ),
             title: TextField(
               controller: _taskController,
-              enabled: !disabledEditing,
+              enabled: !_enabledEditing,
+              maxLines: null,
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16,
               ),
-              onEditingComplete: () => _editingComplete(widget.task),
+              onEditingComplete: () => _switchEditing(),
             ),
             trailing: _editButton(widget.task),
             children: [
@@ -70,14 +75,51 @@ class TaskWidget extends State<ToDoWidget> {
                 itemBuilder: (BuildContext context, int index) {
                   return SubTaskWidget(
                     task: widget.task.subTasks[index],
-                    readOnly: disabledEditing,
+                    readOnly: _enabledEditing,
+                    mainTaskComplete: widget.task.complete,
                     taskComplete: _taskComplete,
+                    deleteSubTask: _deleteSubTask,
                   );
                 },
               ),
+              underTitle(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget underTitle() {
+    TextStyle underTextStyle() {
+      return TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 10);
+    }
+
+    return ListTile(
+      trailing: IconButton(
+        icon: const Icon(Icons.cancel),
+        onPressed: () {
+          widget.deleteTask(widget.task.id);
+        },
+      ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            textAlign: TextAlign.start,
+            style: underTextStyle(),
+            'добавить подзадачу',
+          ),
+          Text(
+            textAlign: TextAlign.end,
+            style: underTextStyle(),
+            'удалить задачу',
+          ),
+        ],
+      ),
+      leading: IconButton(
+        icon: const Icon(Icons.add),
+        onPressed: _addSubTask,
       ),
     );
   }
@@ -86,7 +128,13 @@ class TaskWidget extends State<ToDoWidget> {
     return BoxDecoration(
       color: Colors.white,
       border: Border(
-          right: BorderSide(color: Colors.red.withOpacity(0.7), width: 2)),
+        right: BorderSide(
+          color: widget.task.complete
+              ? Colors.green.withOpacity(0.7)
+              : Colors.red.withOpacity(0.7),
+          width: 2,
+        ),
+      ),
       borderRadius: BorderRadius.circular(10),
       boxShadow: [
         BoxShadow(
@@ -100,17 +148,9 @@ class TaskWidget extends State<ToDoWidget> {
 
   Widget _editButton(Task task) {
     return IconButton(
-      icon: disabledEditing ? const Icon(Icons.edit) : const Icon(Icons.check),
-      color: disabledEditing ? null : Colors.green.withOpacity(0.9),
-      onPressed: () {
-        if (disabledEditing) {
-          setState(() {
-            disabledEditing = false;
-          });
-        } else {
-          _editingComplete(task);
-        }
-      },
+      icon: _enabledEditing ? const Icon(Icons.edit) : const Icon(Icons.check),
+      color: _enabledEditing ? null : Colors.green.withOpacity(0.9),
+      onPressed: _switchEditing,
     );
   }
 
@@ -118,17 +158,38 @@ class TaskWidget extends State<ToDoWidget> {
     widget.task.name = _taskController.text.toString();
   }
 
+
+
   void _taskComplete(Task task) {
-    task.complete = !task.complete;
-    setState(() {});
+    setState(() {
+      //redrawing 'checkBox/checkMark'
+      task.complete = !task.complete;
+    });
   }
 
-  void _editingComplete(Task task) {
-    if (!disabledEditing) {
-      FocusManager.instance.primaryFocus?.unfocus();
-      task.name = _taskController.text;
-      disabledEditing = true;
-      setState(() {});
-    }
+  void _switchEditing() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() {
+      //disabled/enabledEditing editing
+      _enabledEditing = !_enabledEditing;
+    });
+  }
+
+  void _addSubTask() {
+    setState(() {
+      //new subTask
+      widget.task.subTasks.add(Task(
+        id: widget.task.subTasks.isEmpty ? 0 : widget.task.subTasks.length,
+        name:
+            "new subTask${widget.task.subTasks.isEmpty ? 0 : widget.task.subTasks.length}",
+      ));
+    });
+  }
+
+  void _deleteSubTask(int id) {
+    setState(() {
+      //delete subTask
+      widget.task.subTasks.removeWhere((element) => element.id == id);
+    });
   }
 }

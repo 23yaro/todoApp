@@ -64,6 +64,7 @@ class TaskWidget extends State<ToDoWidget> {
                 color: Colors.black,
                 fontSize: 16,
               ),
+              decoration: const InputDecoration(hintText: 'Новая задача'),
               onEditingComplete: () => _switchEditing(),
             ),
             trailing: _editButton(widget.task),
@@ -108,12 +109,12 @@ class TaskWidget extends State<ToDoWidget> {
           Text(
             textAlign: TextAlign.start,
             style: underTextStyle(),
-            'добавить подзадачу',
+            'добавить',
           ),
           Text(
             textAlign: TextAlign.end,
             style: underTextStyle(),
-            'удалить задачу',
+            'удалить',
           ),
         ],
       ),
@@ -180,8 +181,6 @@ class TaskWidget extends State<ToDoWidget> {
       //new subTask
       widget.task.subTasks.add(Task(
         id: widget.task.subTasks.isEmpty ? 0 : widget.task.subTasks.length,
-        name:
-            "new subTask${widget.task.subTasks.isEmpty ? 0 : widget.task.subTasks.length}",
       ));
     });
   }

@@ -24,7 +24,7 @@ class SubTaskWidget extends StatefulWidget {
 
 class _SubTaskWidgetState extends State<SubTaskWidget> {
   final _subTaskController = TextEditingController();
-
+  bool? lastState;
   @override
   void initState() {
     super.initState();
@@ -40,12 +40,7 @@ class _SubTaskWidgetState extends State<SubTaskWidget> {
   @override
   Widget build(BuildContext context) {
     _subTaskController.text = widget.task.name.toString();
-    if (widget.mainTaskComplete){
-      widget.task.complete = true;
-    }
-    else {
-      widget.task.complete = false;
-    }// bug
+    saveCompleteState();
     return ListTile(
       leading: IconButton(
         icon: Icon(
@@ -80,16 +75,25 @@ class _SubTaskWidgetState extends State<SubTaskWidget> {
   }
 
   InputDecoration _inputDecoration() {
-    return widget.readOnly
-        ? const InputDecoration(
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 5))
-        : const InputDecoration(
-            border: UnderlineInputBorder(),
-            contentPadding: EdgeInsets.symmetric(horizontal: 5));
+    return InputDecoration(
+      hintStyle: TextStyle(color: Colors.black.withOpacity(0.4)),
+      hintText: 'Новая подзадача',
+      contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+      border: widget.readOnly ? InputBorder.none : const UnderlineInputBorder(),
+    );
   }
 
   void _saveSubTaskName() {
     widget.task.name = _subTaskController.text.toString();
+  }
+
+  void saveCompleteState() {
+    if (widget.mainTaskComplete) {
+      lastState = widget.task.complete;
+      widget.task.complete = widget.mainTaskComplete;
+    } else if (lastState != null) {
+      widget.task.complete = lastState!;
+      lastState = null;
+    }
   }
 }

@@ -19,10 +19,10 @@ class SubTaskWidget extends StatefulWidget {
   });
 
   @override
-  State<SubTaskWidget> createState() => _SubTaskWidgetState();
+  State<SubTaskWidget> createState() => SubTaskWidgetState();
 }
 
-class _SubTaskWidgetState extends State<SubTaskWidget> {
+class SubTaskWidgetState extends State<SubTaskWidget> {
   final _subTaskController = TextEditingController();
   bool? lastState;
   @override

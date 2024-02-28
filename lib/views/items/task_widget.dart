@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import '../../model/tasks.dart';
 import 'sub_task_widget.dart';
 
-class ToDoWidget extends StatefulWidget {
-  const ToDoWidget({super.key, required this.task, required this.deleteTask});
-
+class TaskWidget extends StatefulWidget {
   final Task task;
   final void Function(int) deleteTask;
 
+  const TaskWidget({
+    super.key,
+    required this.task,
+    required this.deleteTask,
+  });
+
   @override
-  State<ToDoWidget> createState() => TaskWidget();
+  State<TaskWidget> createState() => TaskWidgetState();
 }
 
-class TaskWidget extends State<ToDoWidget> {
+class TaskWidgetState extends State<TaskWidget> {
   late bool _enabledEditing;
   final _taskController = TextEditingController();
 
@@ -158,8 +162,6 @@ class TaskWidget extends State<ToDoWidget> {
   void _saveTaskName() {
     widget.task.name = _taskController.text.toString();
   }
-
-
 
   void _taskComplete(Task task) {
     setState(() {

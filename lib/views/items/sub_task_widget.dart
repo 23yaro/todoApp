@@ -24,7 +24,8 @@ class SubTaskWidget extends StatefulWidget {
 
 class SubTaskWidgetState extends State<SubTaskWidget> {
   final _subTaskController = TextEditingController();
-  bool? lastState;
+  bool lastStateUpdater = false;
+  late bool lastState;
   @override
   void initState() {
     super.initState();
@@ -90,10 +91,11 @@ class SubTaskWidgetState extends State<SubTaskWidget> {
   void saveCompleteState() {
     if (widget.mainTaskComplete) {
       lastState = widget.task.complete;
+      lastStateUpdater = true;
       widget.task.complete = widget.mainTaskComplete;
-    } else if (lastState != null) {
-      widget.task.complete = lastState!;
-      lastState = null;
+    } else if (lastStateUpdater) {
+      widget.task.complete = lastState;
+      lastStateUpdater = false;
     }
   }
 }

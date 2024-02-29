@@ -37,6 +37,20 @@ class TaskWidgetState extends State<TaskWidget> {
   @override
   Widget build(BuildContext context) {
     _taskController.text = widget.task.name.toString();
+    /*final subTaskChildren = SliverList(
+      delegate: SliverChildBuilderDelegate(
+            (context, index) {
+          return SubTaskWidget(
+            task: widget.task.subTasks[index],
+            readOnly: _enabledEditing,
+            mainTaskComplete: widget.task.complete,
+            taskComplete: _taskComplete,
+            deleteSubTask: _deleteSubTask,
+          );
+        },
+        childCount: widget.task.subTasks.length,
+      ),
+    );*/
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: _boxDecoration(),
@@ -73,21 +87,22 @@ class TaskWidgetState extends State<TaskWidget> {
             ),
             trailing: _editButton(widget.task),
             children: [
-              ListView.builder(
-                itemCount: widget.task.subTasks.length,
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemBuilder: (BuildContext context, int index) {
-                  return SubTaskWidget(
-                    task: widget.task.subTasks[index],
-                    readOnly: _enabledEditing,
-                    mainTaskComplete: widget.task.complete,
-                    taskComplete: _taskComplete,
-                    deleteSubTask: _deleteSubTask,
-                  );
-                },
-              ),
-              underTitle(),
+                ListView.builder(
+                  itemCount: widget.task.subTasks.length,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return SubTaskWidget(
+                      task: widget.task.subTasks[index],
+                      readOnly: _enabledEditing,
+                      mainTaskComplete: widget.task.complete,
+                      taskComplete: _taskComplete,
+                      deleteSubTask: _deleteSubTask,
+                    );
+                  },
+                ),
+              _underTile(),
             ],
           ),
         ),
@@ -95,7 +110,7 @@ class TaskWidgetState extends State<TaskWidget> {
     );
   }
 
-  Widget underTitle() {
+  Widget _underTile() {
     TextStyle underTextStyle() {
       return TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 10);
     }

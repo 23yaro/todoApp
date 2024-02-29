@@ -10,6 +10,17 @@ class Task {
     this.name = '',
     this.subTasks = const [],
   });
+
+  @override
+  bool operator ==(Object other) =>
+      other is Task &&
+      other.id == id &&
+      other.complete == complete &&
+      other.name == name &&
+      other.subTasks == subTasks;
+
+  @override
+  int get hashCode => Object.hash(id, complete, name, subTasks);
 }
 
 List<Task> tasks = [

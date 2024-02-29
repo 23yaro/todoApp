@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../items/task_widget.dart';
-import '../items/proxy_decorator.dart';
 import '/../consts/colors.dart';
 import '../../model/tasks.dart';
 
@@ -37,7 +36,7 @@ class _ScrollBarState extends State<ScrollBar> {
         return TaskWidget(
           key: ValueKey(tasks[index]),
           task: tasks[index],
-          deleteTask: (int) {},
+          deleteTask: (int id) {},
         );
       },
       itemCount: tasks.length,

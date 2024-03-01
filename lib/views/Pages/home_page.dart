@@ -30,22 +30,27 @@ class ScrollBar extends StatefulWidget {
 }
 
 class _ScrollBarState extends State<ScrollBar> {
-  final listChildren = <SliverReorderableList>[
-    SliverReorderableList(
-      itemBuilder: (BuildContext context, int index) {
-        return TaskWidget(
-          key: ValueKey(tasks[index]),
-          task: tasks[index],
-          deleteTask: (int id) {},
-        );
-      },
-      itemCount: tasks.length,
-      onReorder: (int oldIndex, int newIndex) {},
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final listChildren = <SliverList>[
+      SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (BuildContext context, int index) {
+            return TaskWidget(
+              key: ValueKey(tasks[index]),
+              task: tasks[index],
+              deleteTask: (int id) {},
+            );
+          },
+          childCount: tasks.length,
+        ),
+      )
+    ];
     return Expanded(child: CustomScrollView(slivers: listChildren));
   }
 }

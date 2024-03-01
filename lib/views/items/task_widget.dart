@@ -37,20 +37,6 @@ class TaskWidgetState extends State<TaskWidget> {
   @override
   Widget build(BuildContext context) {
     _taskController.text = widget.task.name.toString();
-    /*final subTaskChildren = SliverList(
-      delegate: SliverChildBuilderDelegate(
-            (context, index) {
-          return SubTaskWidget(
-            task: widget.task.subTasks[index],
-            readOnly: _enabledEditing,
-            mainTaskComplete: widget.task.complete,
-            taskComplete: _taskComplete,
-            deleteSubTask: _deleteSubTask,
-          );
-        },
-        childCount: widget.task.subTasks.length,
-      ),
-    );*/
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: _boxDecoration(),
@@ -87,59 +73,27 @@ class TaskWidgetState extends State<TaskWidget> {
             ),
             trailing: _editButton(widget.task),
             children: [
-                ListView.builder(
-                  itemCount: widget.task.subTasks.length,
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    return SubTaskWidget(
-                      task: widget.task.subTasks[index],
-                      readOnly: _enabledEditing,
-                      mainTaskComplete: widget.task.complete,
-                      taskComplete: _taskComplete,
-                      deleteSubTask: _deleteSubTask,
-                    );
-                  },
-                ),
+              ListView.builder(
+                itemCount: widget.task.subTasks.length,
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return SubTaskWidget(
+                    task: widget.task.subTasks[index],
+                    readOnly: _enabledEditing,
+                    subTaskFocusNode: null,
+                    mainTaskComplete: widget.task.complete,
+                    taskComplete: _taskComplete,
+                    deleteSubTask: _deleteSubTask,
+
+                  );
+                },
+              ),
               _underTile(),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _underTile() {
-    TextStyle underTextStyle() {
-      return TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 10);
-    }
-
-    return ListTile(
-      trailing: IconButton(
-        icon: const Icon(Icons.cancel),
-        onPressed: () {
-          widget.deleteTask(widget.task.id);
-        },
-      ),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            textAlign: TextAlign.start,
-            style: underTextStyle(),
-            'добавить',
-          ),
-          Text(
-            textAlign: TextAlign.end,
-            style: underTextStyle(),
-            'удалить',
-          ),
-        ],
-      ),
-      leading: IconButton(
-        icon: const Icon(Icons.add),
-        onPressed: _addSubTask,
       ),
     );
   }
@@ -166,6 +120,46 @@ class TaskWidgetState extends State<TaskWidget> {
     );
   }
 
+  Widget _underTile() {
+    return ListTile(
+      leading: Visibility(
+        visible: !widget.task.complete,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: _addSubTask,
+            ),
+            Text(
+              textAlign: TextAlign.end,
+              style:
+                  TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 10),
+              'добавить',
+            ),
+          ],
+        ),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            textAlign: TextAlign.start,
+            style:
+                TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 10),
+            'удалить',
+          ),
+          IconButton(
+            icon: const Icon(Icons.cancel),
+            onPressed: () {
+              widget.deleteTask(widget.task.id);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _editButton(Task task) {
     return IconButton(
       icon: _enabledEditing ? const Icon(Icons.edit) : const Icon(Icons.check),
@@ -179,23 +173,33 @@ class TaskWidgetState extends State<TaskWidget> {
   }
 
   void _taskComplete(Task task) {
-    setState(() {
-      //redrawing 'checkBox/checkMark'
-      task.complete = !task.complete;
-    });
+    ///not set state to sub task  if main task completeяё
+    if (widget.task == task) {
+      setState(() {
+        ///redrawing 'main checkBox/checkMark'
+        task.complete = !task.complete;
+      });
+    } else {
+      if (!widget.task.complete) {
+        setState(() {
+          ///redrawing 'sub checkBox/checkMark'
+          task.complete = !task.complete;
+        });
+      }
+    }
   }
 
   void _switchEditing() {
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
-      //disabled/enabledEditing editing
+      ///disabled/enabledEditing editing
       _enabledEditing = !_enabledEditing;
     });
   }
 
   void _addSubTask() {
     setState(() {
-      //new subTask
+      ///new subTask
       widget.task.subTasks.add(Task(
         id: widget.task.subTasks.isEmpty ? 0 : widget.task.subTasks.length,
       ));
@@ -204,7 +208,7 @@ class TaskWidgetState extends State<TaskWidget> {
 
   void _deleteSubTask(int id) {
     setState(() {
-      //delete subTask
+      ///delete subTask
       widget.task.subTasks.removeWhere((element) => element.id == id);
     });
   }

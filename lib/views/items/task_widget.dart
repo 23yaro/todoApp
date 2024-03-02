@@ -5,11 +5,13 @@ import 'sub_task_widget.dart';
 class TaskWidget extends StatefulWidget {
   final Task task;
   final void Function(int) deleteTask;
+  final FocusNode taskFocusNode;
 
   const TaskWidget({
     super.key,
     required this.task,
     required this.deleteTask,
+    required this.taskFocusNode,
   });
 
   @override
@@ -18,25 +20,29 @@ class TaskWidget extends StatefulWidget {
 
 class TaskWidgetState extends State<TaskWidget> {
   late bool _enabledEditing;
-  final _taskController = TextEditingController();
+  late TextEditingController taskController;
+  late FocusNode subTaskFocusNode;
 
   @override
   void initState() {
     super.initState();
     _enabledEditing = true;
-    _taskController.addListener(_saveTaskName);
+    taskController = TextEditingController();
+    taskController.addListener(_saveTaskName);
+    subTaskFocusNode = FocusNode();
     widget.task.subTasks = [];
   }
 
   @override
   void dispose() {
-    _taskController.dispose();
+    taskController.dispose();
+    subTaskFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _taskController.text = widget.task.name.toString();
+    taskController.text = widget.task.name.toString();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: _boxDecoration(),
@@ -61,8 +67,9 @@ class TaskWidgetState extends State<TaskWidget> {
               onPressed: () => _taskComplete(widget.task),
             ),
             title: TextField(
-              controller: _taskController,
+              controller: taskController,
               enabled: !_enabledEditing,
+              focusNode: widget.taskFocusNode,
               maxLines: null,
               style: const TextStyle(
                 color: Colors.black,
@@ -82,11 +89,12 @@ class TaskWidgetState extends State<TaskWidget> {
                   return SubTaskWidget(
                     task: widget.task.subTasks[index],
                     readOnly: _enabledEditing,
-                    subTaskFocusNode: null,
+                    subTaskFocusNode: subTaskFocusNode,
+
+                    ///debug
                     mainTaskComplete: widget.task.complete,
                     taskComplete: _taskComplete,
                     deleteSubTask: _deleteSubTask,
-
                   );
                 },
               ),
@@ -169,7 +177,7 @@ class TaskWidgetState extends State<TaskWidget> {
   }
 
   void _saveTaskName() {
-    widget.task.name = _taskController.text.toString();
+    widget.task.name = taskController.text.toString();
   }
 
   void _taskComplete(Task task) {
@@ -203,6 +211,11 @@ class TaskWidgetState extends State<TaskWidget> {
       widget.task.subTasks.add(Task(
         id: widget.task.subTasks.isEmpty ? 0 : widget.task.subTasks.length,
       ));
+      if (_enabledEditing) {
+        _switchEditing();
+      }
+      FocusManager.instance.primaryFocus?.unfocus(); ///debug
+      subTaskFocusNode.requestFocus();
     });
   }
 

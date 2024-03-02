@@ -25,25 +25,26 @@ class SubTaskWidget extends StatefulWidget {
 }
 
 class SubTaskWidgetState extends State<SubTaskWidget> {
-  final _subTaskController = TextEditingController();
+  late TextEditingController subTaskController;
   late bool lastStateUpdater = false;
   late bool lastState;
 
   @override
   void initState() {
     super.initState();
-    _subTaskController.addListener(_saveSubTaskName);
+    subTaskController = TextEditingController();
+    subTaskController.addListener(_saveSubTaskName);
   }
 
   @override
   void dispose() {
-    _subTaskController.dispose();
+    subTaskController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _subTaskController.text = widget.task.name.toString();
+    subTaskController.text = widget.task.name.toString();
     saveCompleteState();
     return ListTile(
       leading: IconButton(
@@ -60,7 +61,7 @@ class SubTaskWidgetState extends State<SubTaskWidget> {
         ),
         child: TextField(
           enabled: !widget.task.complete,
-          controller: _subTaskController,
+          controller: subTaskController,
           focusNode: widget.subTaskFocusNode,
           readOnly: widget.readOnly,
           decoration: _inputDecoration(),
@@ -89,7 +90,7 @@ class SubTaskWidgetState extends State<SubTaskWidget> {
   }
 
   void _saveSubTaskName() {
-    widget.task.name = _subTaskController.text.toString();
+    widget.task.name = subTaskController.text.toString();
   }
 
   void saveCompleteState() {

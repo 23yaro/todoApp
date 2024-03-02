@@ -4,7 +4,6 @@ import '../../model/tasks.dart';
 
 class SubTaskWidget extends StatefulWidget {
   final Task task;
-  final FocusNode subTaskFocusNode;
   final bool readOnly;
   final bool mainTaskComplete;
   final void Function(Task) taskComplete;
@@ -13,7 +12,6 @@ class SubTaskWidget extends StatefulWidget {
   const SubTaskWidget({
     super.key,
     required this.task,
-    required this.subTaskFocusNode,
     required this.readOnly,
     required this.mainTaskComplete,
     required this.taskComplete,
@@ -26,12 +24,16 @@ class SubTaskWidget extends StatefulWidget {
 
 class SubTaskWidgetState extends State<SubTaskWidget> {
   late TextEditingController subTaskController;
-  late bool lastStateUpdater = false;
+  late FocusNode subTaskFocusNode;
+  late bool lastStateUpdater;
   late bool lastState;
 
   @override
   void initState() {
     super.initState();
+    lastStateUpdater = false;
+    subTaskFocusNode = FocusNode();
+    subTaskFocusNode.requestFocus();
     subTaskController = TextEditingController();
     subTaskController.addListener(_saveSubTaskName);
   }
@@ -39,6 +41,7 @@ class SubTaskWidgetState extends State<SubTaskWidget> {
   @override
   void dispose() {
     subTaskController.dispose();
+    subTaskFocusNode.dispose();
     super.dispose();
   }
 
@@ -62,7 +65,7 @@ class SubTaskWidgetState extends State<SubTaskWidget> {
         child: TextField(
           enabled: !widget.task.complete,
           controller: subTaskController,
-          focusNode: widget.subTaskFocusNode,
+          focusNode: subTaskFocusNode,
           readOnly: widget.readOnly,
           decoration: _inputDecoration(),
           maxLines: null,
@@ -90,7 +93,7 @@ class SubTaskWidgetState extends State<SubTaskWidget> {
   }
 
   void _saveSubTaskName() {
-    widget.task.name = subTaskController.text.toString();
+    widget.task.name = subTaskController.text.toString().trim();
   }
 
   void saveCompleteState() {

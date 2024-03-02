@@ -5,13 +5,11 @@ import 'sub_task_widget.dart';
 class TaskWidget extends StatefulWidget {
   final Task task;
   final void Function(int) deleteTask;
-  final FocusNode taskFocusNode;
 
   const TaskWidget({
     super.key,
     required this.task,
     required this.deleteTask,
-    required this.taskFocusNode,
   });
 
   @override
@@ -21,7 +19,7 @@ class TaskWidget extends StatefulWidget {
 class TaskWidgetState extends State<TaskWidget> {
   late bool _enabledEditing;
   late TextEditingController taskController;
-  late FocusNode subTaskFocusNode;
+  late FocusNode taskFocusNode;
 
   @override
   void initState() {
@@ -29,14 +27,15 @@ class TaskWidgetState extends State<TaskWidget> {
     _enabledEditing = true;
     taskController = TextEditingController();
     taskController.addListener(_saveTaskName);
-    subTaskFocusNode = FocusNode();
+    taskFocusNode = FocusNode();
+    taskFocusNode.requestFocus();
     widget.task.subTasks = [];
   }
 
   @override
   void dispose() {
     taskController.dispose();
-    subTaskFocusNode.dispose();
+    taskFocusNode.dispose();
     super.dispose();
   }
 
@@ -69,7 +68,7 @@ class TaskWidgetState extends State<TaskWidget> {
             title: TextField(
               controller: taskController,
               enabled: !_enabledEditing,
-              focusNode: widget.taskFocusNode,
+              focusNode: taskFocusNode,
               maxLines: null,
               style: const TextStyle(
                 color: Colors.black,
@@ -89,7 +88,6 @@ class TaskWidgetState extends State<TaskWidget> {
                   return SubTaskWidget(
                     task: widget.task.subTasks[index],
                     readOnly: _enabledEditing,
-                    subTaskFocusNode: subTaskFocusNode,
 
                     ///debug
                     mainTaskComplete: widget.task.complete,
@@ -177,7 +175,7 @@ class TaskWidgetState extends State<TaskWidget> {
   }
 
   void _saveTaskName() {
-    widget.task.name = taskController.text.toString();
+    widget.task.name = taskController.text.toString().trim();
   }
 
   void _taskComplete(Task task) {
@@ -215,7 +213,6 @@ class TaskWidgetState extends State<TaskWidget> {
         _switchEditing();
       }
       FocusManager.instance.primaryFocus?.unfocus(); ///debug
-      subTaskFocusNode.requestFocus();
     });
   }
 

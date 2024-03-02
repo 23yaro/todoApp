@@ -45,7 +45,6 @@ class _ScrollBarState extends State<ScrollBar> {
               key: ValueKey(tasks[index]),
               task: tasks[index],
               deleteTask: (int id) {},
-              taskFocusNode: FocusNode(), ///debug
             );
           },
           childCount: tasks.length,

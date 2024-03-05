@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../consts/colors.dart';
+import '../../consts/strings.dart';
 import '../../model/tasks.dart';
 
 class SubTaskWidget extends StatefulWidget {
@@ -85,14 +86,15 @@ class SubTaskWidgetState extends State<SubTaskWidget> {
 
   InputDecoration _inputDecoration() {
     return InputDecoration(
-      hintStyle: TextStyle(color: Colors.black.withOpacity(0.4)),
-      hintText: 'Новая подзадача',
+      hintStyle: const TextStyle(color: tdBlack),
+      hintText: subTaskWidgetNewSubTask,
       contentPadding: const EdgeInsets.symmetric(horizontal: 5),
       border: widget.readOnly ? InputBorder.none : const UnderlineInputBorder(),
     );
   }
 
   void _saveSubTaskName() {
+    ///save task name and remove whitespace
     widget.task.name = subTaskController.text.toString().trim();
   }
 

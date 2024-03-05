@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../consts/colors.dart';
+import '../../consts/strings.dart';
 import '../../model/tasks.dart';
 import 'sub_task_widget.dart';
 
@@ -55,8 +57,8 @@ class TaskWidgetState extends State<TaskWidget> {
             }
           },
           child: ExpansionTile(
-            iconColor: Colors.black,
-            textColor: Colors.black,
+            iconColor: tdBlack,
+            textColor: tdBlack,
             shape: const Border(),
             leading: IconButton(
               iconSize: 28,
@@ -71,10 +73,10 @@ class TaskWidgetState extends State<TaskWidget> {
               focusNode: taskFocusNode,
               maxLines: null,
               style: const TextStyle(
-                color: Colors.black,
+                color: tdBlack,
                 fontSize: 16,
               ),
-              decoration: const InputDecoration(hintText: 'Новая задача'),
+              decoration: const InputDecoration(hintText: taskWidget),
               onEditingComplete: () => _switchEditing(),
             ),
             trailing: _editButton(widget.task),
@@ -106,19 +108,19 @@ class TaskWidgetState extends State<TaskWidget> {
 
   Decoration _boxDecoration() {
     return BoxDecoration(
-      color: Colors.white,
+      color: tdWhite,
       border: Border(
         right: BorderSide(
           color: widget.task.complete
-              ? Colors.green.withOpacity(0.7)
-              : Colors.red.withOpacity(0.7),
+              ? tdGreen
+              : tdRed,
           width: 2,
         ),
       ),
       borderRadius: BorderRadius.circular(10),
-      boxShadow: [
+      boxShadow: const [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.2),
+          color: tdGrey,
           spreadRadius: 2,
           blurRadius: 6,
         )
@@ -137,11 +139,11 @@ class TaskWidgetState extends State<TaskWidget> {
               icon: const Icon(Icons.add),
               onPressed: _addSubTask,
             ),
-            Text(
+            const Text(
               textAlign: TextAlign.end,
               style:
-                  TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 10),
-              'добавить',
+                  TextStyle(color: tdBlack, fontSize: 10),
+              taskWidgetAdd,
             ),
           ],
         ),
@@ -149,11 +151,11 @@ class TaskWidgetState extends State<TaskWidget> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          const Text(
             textAlign: TextAlign.start,
             style:
-                TextStyle(color: Colors.black.withOpacity(0.5), fontSize: 10),
-            'удалить',
+                TextStyle(color: tdBlack, fontSize: 10),
+            taskWidgetRemove,
           ),
           IconButton(
             icon: const Icon(Icons.cancel),
@@ -169,7 +171,7 @@ class TaskWidgetState extends State<TaskWidget> {
   Widget _editButton(Task task) {
     return IconButton(
       icon: _enabledEditing ? const Icon(Icons.edit) : const Icon(Icons.check),
-      color: _enabledEditing ? null : Colors.green.withOpacity(0.9),
+      color: _enabledEditing ? null : tdGreen,
       onPressed: _switchEditing,
     );
   }
@@ -179,7 +181,7 @@ class TaskWidgetState extends State<TaskWidget> {
   }
 
   void _taskComplete(Task task) {
-    ///not set state to sub task  if main task completeяё
+    ///not set state to sub task  if main task complete
     if (widget.task == task) {
       setState(() {
         ///redrawing 'main checkBox/checkMark'
@@ -206,13 +208,13 @@ class TaskWidgetState extends State<TaskWidget> {
   void _addSubTask() {
     setState(() {
       ///new subTask
+      FocusManager.instance.primaryFocus?.unfocus();
       widget.task.subTasks.add(Task(
         id: widget.task.subTasks.isEmpty ? 0 : widget.task.subTasks.length,
       ));
       if (_enabledEditing) {
         _switchEditing();
       }
-      FocusManager.instance.primaryFocus?.unfocus(); ///debug
     });
   }
 

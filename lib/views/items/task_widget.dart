@@ -45,7 +45,6 @@ class TaskWidgetState extends State<TaskWidget> {
   Widget build(BuildContext context) {
     taskController.text = widget.task.name.toString();
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: _boxDecoration(),
       child: ListTileTheme(
         contentPadding: EdgeInsets.zero,

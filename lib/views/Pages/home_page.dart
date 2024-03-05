@@ -8,14 +8,15 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: tdBGColor,
-      body: Column(
+      body: Stack(
         children: [
-          SizedBox(
-            height: 50,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: const ScrollBar(),
           ),
-          ScrollBar(),
+          const AddButton(),
         ],
       ),
     );
@@ -41,17 +42,20 @@ class _ScrollBarState extends State<ScrollBar> {
       SliverList(
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
-            return TaskWidget(
-              key: ValueKey(tasks[index]),
-              task: tasks[index],
-              deleteTask: (int id) {},
+            return Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: TaskWidget(
+                key: ValueKey(tasks[index]),
+                task: tasks[index],
+                deleteTask: (int id) {},
+              ),
             );
           },
           childCount: tasks.length,
         ),
       )
     ];
-    return Expanded(child: CustomScrollView(slivers: listChildren));
+    return CustomScrollView(slivers: listChildren);
   }
 }
 
@@ -60,7 +64,24 @@ class AddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Container(
+        margin: const EdgeInsets.only(right: 10, bottom: 10),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: tdBlack,
+            minimumSize: const Size(50, 60),
+            elevation: 10,
+          ),
+          child: const Icon(
+            Icons.add,
+            color: tdWhite,
+          ),
+          onPressed: () {},
+        ),
+      ),
+    );
   }
 }
 
